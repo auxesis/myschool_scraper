@@ -41,7 +41,6 @@ describe Icsea do
 
     it 'returns all known records' do
       expect(Icsea.all).to_not be_empty
-      binding.pry
     end
   end
 end
