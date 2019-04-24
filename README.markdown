@@ -25,3 +25,9 @@ Run tests:
 ```
 bundle exec rake
 ```
+
+Format code:
+
+```
+bundle exec rufo
+```
