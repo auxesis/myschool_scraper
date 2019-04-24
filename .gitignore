@@ -1,0 +1,5 @@
+# Ignore output of scraper
+*.sqlite
+
+# Ignore source spreadsheets
+*.csv
