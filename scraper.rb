@@ -30,11 +30,36 @@ end
 
 class School
   class << self
+    attr_writer :source_filename
+
+    def source_filename
+      @source_filename || 'targets.csv'
+    end
+
+    def records
+      @schools
+    end
+
+    def scrape
+      @schools = []
+
+      CSV.foreach(source_filename, :headers => true) do |row|
+        # Make the column names saveable in SQLite
+        record = Hash[row.map { |k,v| [ k.parameterize(separator: '_'), v ] }]
+        @schools << record
+      end
+    end
+
+    def pkeys
+      %w[acara_school_id calendar_year]
+    end
+
+    def table_name
+      'schools'
+    end
+
     def save
-      records = [
-        { 'acara_school_id' => '1', 'calendar_year' => '2018' }
-      ]
-      ScraperWiki.save_sqlite(['acara_school_id', 'calendar_year'], records, table_name='schools')
+      ScraperWiki.save_sqlite(pkeys, records, table_name)
     end
   end
 end
