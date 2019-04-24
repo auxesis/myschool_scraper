@@ -4,30 +4,6 @@ require 'csv'
 require 'pry'
 require 'mechanize'
 
-def load_targets
-  @targets = []
-
-  CSV.foreach('targets.csv', :headers => true) do |row|
-    @targets << row
-  end
-end
-
-def target_ids
-  @ids ||= @targets.map { |t| t['ACARA School ID'] }
-end
-
-def find_by_id(id)
-  @targets.find { |t| t['ACARA School ID'] == id }
-end
-
-def save_schools
-  target_ids.each do |id|
-    row = find_by_id(id).to_hash
-    record = Hash[row.map { |k,v| [ k.parameterize(separator: '_'), v ] }]
-    ScraperWiki.save_sqlite(['acara_school_id', 'calendar_year'], record, table_name='schools')
-  end
-end
-
 class School
   class << self
     attr_writer :source_filename
