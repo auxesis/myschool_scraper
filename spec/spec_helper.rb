@@ -1,18 +1,18 @@
-require_relative('../scraper')
-require 'webmock/rspec'
-require 'vcr'
+require_relative("../scraper")
+require "webmock/rspec"
+require "vcr"
 
 VCR.configure do |c|
-  c.cassette_library_dir = 'spec/vcr_cassettes'
+  c.cassette_library_dir = "spec/vcr_cassettes"
   c.hook_into :webmock
 end
 
-RSpec.shared_context 'ScraperWiki' do
+RSpec.shared_context "ScraperWiki" do
   before(:each) do
     # Create a new connection to new sqlite
     ScraperWiki.close_sqlite
-    ScraperWiki.config = { db: ':memory:' }
-    ScraperWiki.sqlite_magic_connection.execute('PRAGMA database_list')
+    ScraperWiki.config = { db: ":memory:" }
+    ScraperWiki.sqlite_magic_connection.execute("PRAGMA database_list")
   end
 
   after(:each) do
@@ -58,7 +58,7 @@ RSpec.configure do |config|
   config.tty = true
 
   # Set up a clean database for every test
-  config.include_context 'ScraperWiki'
+  config.include_context "ScraperWiki"
 
   # Many RSpec users commonly either run the entire suite or an individual
   # file, and it's useful to allow more verbose output when running an
