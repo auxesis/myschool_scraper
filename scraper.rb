@@ -125,11 +125,68 @@ class Icsea
   end
 end
 
+class NaplanNumbers
+  class << self
+    def agent
+      @agent ||= Mechanize.new
+    end
+
+    def years
+      %w[2018]
+    end
+
+    def records
+      @numbers
+    end
+
+    def pkeys
+      %w[acara_school_id calendar_year domain]
+    end
+
+    def table_name
+      "naplan_numbers"
+    end
+
+    def scrape_naplan_numbers(acara_school_id:, calendar_year:)
+      record = {
+        "acara_school_id" => acara_school_id,
+        "calendar_year" => calendar_year,
+        "domain" => "reading",
+      }
+    end
+
+    def scrape
+      @numbers = []
+      years.each do |year|
+        School.all.each do |school|
+          id = school["acara_school_id"]
+          debug("Scraping NAPLAN numbers for #{id}")
+          @numbers << scrape_naplan_numbers(acara_school_id: id, calendar_year: year)
+        end
+      end
+    end
+
+    def save
+      ScraperWiki.save_sqlite(pkeys, records, table_name)
+    end
+
+    def debug(msg)
+      puts "[debug] " + msg
+    end
+
+    def all
+      ScraperWiki.select("* FROM #{table_name}")
+    end
+  end
+end
+
 def main
   School.scrape
   School.save
   Icsea.scrape
   Icsea.save
+  NaplanNumbers.scrape
+  NaplanNumbers.save
 end
 
 main if $PROGRAM_NAME == __FILE__
