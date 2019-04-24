@@ -25,4 +25,15 @@ describe School do
       expect(ScraperWiki.select('* from schools')).to_not be_empty
     end
   end
+
+  describe '#all' do
+    before(:each) do
+      School.scrape
+      School.save
+    end
+
+    it 'returns all known records' do
+      expect(School.all).to_not be_empty
+    end
+  end
 end
