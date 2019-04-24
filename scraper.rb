@@ -61,6 +61,10 @@ class School
     def save
       ScraperWiki.save_sqlite(pkeys, records, table_name)
     end
+
+    def all
+      ScraperWiki.select("* FROM #{table_name}")
+    end
   end
 end
 
