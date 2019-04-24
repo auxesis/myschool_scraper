@@ -28,6 +28,16 @@ def save_schools
   end
 end
 
+class School
+  class << self
+    def save
+      records = [
+        { 'acara_school_id' => '1', 'calendar_year' => '2018' }
+      ]
+      ScraperWiki.save_sqlite(['acara_school_id', 'calendar_year'], records, table_name='schools')
+    end
+  end
+end
 
 class Icsea
   class << self

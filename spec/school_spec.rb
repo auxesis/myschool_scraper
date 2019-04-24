@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe School do
-  describe '#scrape' do
+  describe '#save' do
     before(:each) do
-      School.scrape
+      School.save
     end
 
     it 'creates records' do
