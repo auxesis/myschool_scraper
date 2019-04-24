@@ -12,4 +12,6 @@ group :development do
   gem 'rspec'
   gem 'rake'
   gem 'pry-coolline'
+  gem 'vcr'
+  gem 'webmock'
 end

@@ -63,7 +63,7 @@ class Icsea
       page.title == "Internal Server Error"
     end
 
-    def scrape_and_build_record(acara_school_id:, calendar_year:)
+    def scrape_school(acara_school_id:, calendar_year:)
       record = {
         'acara_school_id' => acara_school_id,
         'calendar_year' => calendar_year
@@ -89,36 +89,46 @@ class Icsea
     end
 
     def scrape
-      load_targets
-
-      records = []
-      target_ids.each do |id|
-        years.each do |year|
+      @icsea = []
+      years.each do |year|
+        School.all.each do |school|
+          id = school['acara_school_id']
           debug("Scraping #{id}")
-          records << scrape_and_build_record(acara_school_id: id, calendar_year: year)
+          @icsea << scrape_school(acara_school_id: id, calendar_year: year)
         end
       end
+    end
 
-      records
+    def records
+      @icsea
+    end
+
+    def pkeys
+      %w[acara_school_id calendar_year]
+    end
+
+    def table_name
+      'icsea'
     end
 
     def save
-      records = scrape
-
-      records.each do |record|
-        ScraperWiki.save_sqlite(['acara_school_id', 'calendar_year'], record, table_name='icsea')
-      end
+      ScraperWiki.save_sqlite(pkeys, records, table_name)
     end
 
     def debug(msg)
       puts '[debug] ' + msg
     end
+
+    def all
+      ScraperWiki.select("* FROM #{table_name}")
+    end
   end
 end
 
 def main
-  load_targets
-  save_schools
+  School.scrape
+  School.save
+  Icsea.scrape
   Icsea.save
 end
 
