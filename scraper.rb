@@ -117,8 +117,8 @@ class Icsea
       }
       url = "https://www.myschool.edu.au/school/#{acara_school_id}/profile/#{calendar_year}"
       page = agent.get(url)
-      return record if no_data?(page)
-      return record if server_error?(page)
+      return {} if no_data?(page)
+      return {} if server_error?(page)
 
       index = page.search("section.student-background div.index li div.col2").map(&:text)
       record["school_icsea_value"] = index.first
@@ -144,6 +144,7 @@ class Icsea
           @icsea << scrape_school(acara_school_id: id, calendar_year: year)
         end
       end
+      @icsea.reject!(&:empty?)
     end
 
     def records

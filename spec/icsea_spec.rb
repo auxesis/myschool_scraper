@@ -34,6 +34,10 @@ describe Icsea do
     it "creates records" do
       expect(ScraperWiki.select("* FROM #{Icsea.table_name}")).to_not be_empty
     end
+
+    it "does not create empty records" do
+      expect(ScraperWiki.select("* FROM #{Icsea.table_name} WHERE q1 IS NULL")).to be_empty
+    end
   end
 
   describe "#all" do
