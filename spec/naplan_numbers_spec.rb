@@ -41,7 +41,6 @@ describe NaplanNumbers do
 
     it "returns all known records" do
       expect(NaplanNumbers.all).to_not be_empty
-      binding.pry
     end
   end
 end

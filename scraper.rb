@@ -140,19 +140,46 @@ class NaplanNumbers
     end
 
     def pkeys
-      %w[acara_school_id calendar_year domain]
+      %w[acara_school_id calendar_year]
     end
 
     def table_name
       "naplan_numbers"
     end
 
+    def no_data?(page)
+      page.search("div.school-naplan div.naplan-landing p.no-data-message").any?
+    end
+
     def scrape_naplan_numbers(acara_school_id:, calendar_year:)
-      record = {
+      records = []
+      base_record = {
         "acara_school_id" => acara_school_id,
         "calendar_year" => calendar_year,
-        "domain" => "reading",
       }
+      url = "https://www.myschool.edu.au/school/#{acara_school_id}/naplan/numbers/#{calendar_year}"
+      begin
+        page = agent.get(url)
+      rescue Mechanize::ResponseCodeError => e
+        info("404 on #{url}")
+        return {}
+      end
+
+      return records if no_data?(page)
+
+      # build up the list of columns
+      headers = page.search("table#allSchoolsTable>thead>tr>th").map(&:text)
+      headers = page.search("table#allSchoolsTable>thead>tr>th").map(&:text).map(&:parameterize)
+      headers[0] = "year"
+
+      rows = page.search("table#allSchoolsTable>tbody>tr")
+      rows.each do |row|
+        columns = row.children.reject(&:text?)
+        values = columns.map { |c| c.children.find(&:text?).text.strip }
+        attrs = Hash[headers.zip(values)]
+        records << base_record.merge(attrs)
+      end
+      records
     end
 
     def scrape
@@ -164,6 +191,8 @@ class NaplanNumbers
           @numbers << scrape_naplan_numbers(acara_school_id: id, calendar_year: year)
         end
       end
+      @numbers.flatten!
+      @numbers.reject!(&:empty?)
     end
 
     def save
@@ -172,6 +201,10 @@ class NaplanNumbers
 
     def debug(msg)
       puts "[debug] " + msg
+    end
+
+    def info(msg)
+      puts "[info] " + msg
     end
 
     def all
