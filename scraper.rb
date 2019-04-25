@@ -202,6 +202,8 @@ class NaplanNumbers
       rows.each do |row|
         columns = row.children.reject(&:text?)
         values = columns.map { |c| c.children.find(&:text?).text.strip }
+        # strip incomplete data
+        values.map! { |v| v == "-" ? nil : v }
         attrs = Hash[headers.zip(values)]
         records << base_record.merge(attrs)
       end
@@ -219,6 +221,9 @@ class NaplanNumbers
       end
       @numbers.flatten!
       @numbers.reject!(&:empty?)
+      # strip records without any domains
+      domains = %w[reading writing spelling grammar numeracy]
+      @numbers.reject! { |r| domains.any? { |d| r[d] } }
     end
   end
 end

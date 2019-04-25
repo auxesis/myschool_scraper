@@ -34,6 +34,16 @@ describe NaplanNumbers do
     it "creates records" do
       expect(ScraperWiki.select("* FROM #{NaplanNumbers.table_name}")).to_not be_empty
     end
+
+    context "with bad data" do
+      it "does not create empty records" do
+        expect(ScraperWiki.select("* FROM #{NaplanNumbers.table_name} WHERE reading IS NULL")).to be_empty
+      end
+
+      it "does not create records for empty results" do
+        expect(ScraperWiki.select("* FROM #{NaplanNumbers.table_name} WHERE reading IS '-'")).to be_empty
+      end
+    end
   end
 
   describe "#all" do
