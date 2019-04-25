@@ -223,7 +223,7 @@ class NaplanNumbers
       @numbers.reject!(&:empty?)
       # strip records without any domains
       domains = %w[reading writing spelling grammar numeracy]
-      @numbers.reject! { |r| domains.any? { |d| r[d] } }
+      @numbers.select! { |r| domains.any? { |d| r[d] } }
     end
   end
 end
