@@ -8,7 +8,9 @@ describe Icsea do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("icsea_scrape") { Icsea.scrape }
+      VCR.use_cassette("icsea_scrape") do
+        Icsea.scrape(schools: School.all)
+      end
     end
 
     it "builds shadow records" do
@@ -21,7 +23,9 @@ describe Icsea do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("icsea_scrape") { Icsea.scrape }
+      VCR.use_cassette("icsea_scrape") do
+        Icsea.scrape(schools: School.all)
+      end
       Icsea.save
     end
 
@@ -35,7 +39,9 @@ describe Icsea do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("icsea_scrape") { Icsea.scrape }
+      VCR.use_cassette("icsea_scrape") do
+        Icsea.scrape(schools: School.all)
+      end
       Icsea.save
     end
 
