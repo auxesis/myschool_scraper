@@ -1,7 +1,9 @@
 require "spec_helper"
 
 describe Icsea do
-  let(:table_name) { "icsea" }
+  before(:all) do
+    Icsea.log_level = Icsea::LOG_NONE
+  end
 
   describe "#scrape" do
     before(:each) do
@@ -30,7 +32,7 @@ describe Icsea do
     end
 
     it "creates records" do
-      expect(ScraperWiki.select("* from #{table_name}")).to_not be_empty
+      expect(ScraperWiki.select("* FROM #{Icsea.table_name}")).to_not be_empty
     end
   end
 

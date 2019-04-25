@@ -1,8 +1,6 @@
 require "spec_helper"
 
 describe NaplanNumbers do
-  let(:table_name) { "naplan_numbers" }
-
   before(:all) do
     NaplanNumbers.log_level = NaplanNumbers::LOG_NONE
   end
@@ -34,7 +32,7 @@ describe NaplanNumbers do
     end
 
     it "creates records" do
-      expect(ScraperWiki.select("* from #{table_name}")).to_not be_empty
+      expect(ScraperWiki.select("* FROM #{NaplanNumbers.table_name}")).to_not be_empty
     end
   end
 

@@ -4,7 +4,64 @@ require "csv"
 require "pry"
 require "mechanize"
 
+module Scraper
+  LOG_DEBUG = 1
+  LOG_INFO = 2
+  LOG_NONE = -1
+
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    # Working with scraped records in SQLite
+    def table_name
+      ActiveSupport::Inflector.tableize(self.to_s)
+    end
+
+    def save
+      ScraperWiki.save_sqlite(pkeys, records, table_name)
+    end
+
+    def all
+      ScraperWiki.select("* FROM #{table_name}")
+    end
+
+    # Scraping
+    def agent
+      @agent ||= Mechanize.new
+    end
+
+    # Logging
+    def debug(msg)
+      puts "[debug] " + msg if log_debug?
+    end
+
+    def info(msg)
+      puts "[info] " + msg if log_info?
+    end
+
+    def log_level=(level)
+      @log_level = level
+    end
+
+    def log_level
+      @log_level || LOG_DEBUG
+    end
+
+    def log_info?
+      log_level >= LOG_INFO
+    end
+
+    def log_debug?
+      log_level >= LOG_DEBUG
+    end
+  end
+end
+
 class School
+  include Scraper
+
   class << self
     attr_writer :source_filename
 
@@ -29,22 +86,12 @@ class School
     def pkeys
       %w[acara_school_id calendar_year]
     end
-
-    def table_name
-      "schools"
-    end
-
-    def save
-      ScraperWiki.save_sqlite(pkeys, records, table_name)
-    end
-
-    def all
-      ScraperWiki.select("* FROM #{table_name}")
-    end
   end
 end
 
 class Icsea
+  include Scraper
+
   class << self
     def agent
       @agent ||= Mechanize.new
@@ -106,31 +153,13 @@ class Icsea
     def pkeys
       %w[acara_school_id calendar_year]
     end
-
-    def table_name
-      "icsea"
-    end
-
-    def save
-      ScraperWiki.save_sqlite(pkeys, records, table_name)
-    end
-
-    def debug(msg)
-      puts "[debug] " + msg
-    end
-
-    def all
-      ScraperWiki.select("* FROM #{table_name}")
-    end
   end
 end
 
 class NaplanNumbers
-  class << self
-    def agent
-      @agent ||= Mechanize.new
-    end
+  include Scraper
 
+  class << self
     def years
       %w[2018]
     end
@@ -141,10 +170,6 @@ class NaplanNumbers
 
     def pkeys
       %w[acara_school_id calendar_year]
-    end
-
-    def table_name
-      "naplan_numbers"
     end
 
     def no_data?(page)
@@ -194,43 +219,7 @@ class NaplanNumbers
       @numbers.flatten!
       @numbers.reject!(&:empty?)
     end
-
-    def save
-      ScraperWiki.save_sqlite(pkeys, records, table_name)
-    end
-
-    def debug(msg)
-      puts "[debug] " + msg if log_debug?
-    end
-
-    def info(msg)
-      puts "[info] " + msg if log_info?
-    end
-
-    def all
-      ScraperWiki.select("* FROM #{table_name}")
-    end
-
-    def log_level=(level)
-      @log_level = level
-    end
-
-    def log_level
-      @log_level || LOG_DEBUG
-    end
-
-    def log_info?
-      log_level >= LOG_INFO
-    end
-
-    def log_debug?
-      log_level >= LOG_DEBUG
-    end
   end
-
-  LOG_DEBUG = 1
-  LOG_INFO = 2
-  LOG_NONE = -1
 end
 
 def main
