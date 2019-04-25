@@ -97,10 +97,6 @@ class Icsea
       @agent ||= Mechanize.new
     end
 
-    def years
-      %w[2018]
-    end
-
     def no_data?(page)
       page.search("section.student-background div.index p.no-data-message").any?
     end
@@ -131,16 +127,18 @@ class Icsea
       record["q3"] = quartiles[2]
       record["q4"] = quartiles[3]
       record
+    rescue Mechanize::ResponseCodeError => e
+      return {}
     rescue => e
       binding.pry
     end
 
-    def scrape(schools:)
+    def scrape(schools:, years:)
       @icsea = []
       years.each do |year|
         schools.each do |school|
           id = school["acara_school_id"]
-          debug("Scraping ICSEA #{id}")
+          debug("Scraping ICSEA #{id} for #{year}")
           @icsea << scrape_school(acara_school_id: id, calendar_year: year)
         end
       end
@@ -161,10 +159,6 @@ class NaplanNumbers
   include Scraper
 
   class << self
-    def years
-      %w[2018]
-    end
-
     def records
       @numbers
     end
@@ -210,12 +204,12 @@ class NaplanNumbers
       records
     end
 
-    def scrape(schools:)
+    def scrape(schools:, years: (2008..2018))
       @numbers = []
       years.each do |year|
         schools.each do |school|
           id = school["acara_school_id"]
-          debug("Scraping NAPLAN numbers for #{id}")
+          debug("Scraping NAPLAN numbers for #{id} for #{year}")
           @numbers << scrape_naplan_numbers(acara_school_id: id, calendar_year: year)
         end
       end
