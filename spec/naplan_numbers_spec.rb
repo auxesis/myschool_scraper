@@ -12,7 +12,9 @@ describe NaplanNumbers do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("naplan_numbers_scrape") { NaplanNumbers.scrape }
+      VCR.use_cassette("naplan_numbers_scrape") do
+        NaplanNumbers.scrape(schools: School.all)
+      end
     end
 
     it "builds shadow records" do
@@ -25,7 +27,9 @@ describe NaplanNumbers do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("naplan_numbers_scrape") { NaplanNumbers.scrape }
+      VCR.use_cassette("naplan_numbers_scrape") do
+        NaplanNumbers.scrape(schools: School.all)
+      end
       NaplanNumbers.save
     end
 
@@ -39,7 +43,9 @@ describe NaplanNumbers do
       School.source_filename = "spec/schools.csv"
       School.scrape
       School.save
-      VCR.use_cassette("naplan_numbers_scrape") { NaplanNumbers.scrape }
+      VCR.use_cassette("naplan_numbers_scrape") do
+        NaplanNumbers.scrape(schools: School.all)
+      end
       NaplanNumbers.save
     end
 

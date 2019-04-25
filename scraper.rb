@@ -88,12 +88,12 @@ class Icsea
       binding.pry
     end
 
-    def scrape
+    def scrape(schools:)
       @icsea = []
       years.each do |year|
-        School.all.each do |school|
+        schools.each do |school|
           id = school["acara_school_id"]
-          debug("Scraping #{id}")
+          debug("Scraping ICSEA #{id}")
           @icsea << scrape_school(acara_school_id: id, calendar_year: year)
         end
       end
@@ -182,10 +182,10 @@ class NaplanNumbers
       records
     end
 
-    def scrape
+    def scrape(schools:)
       @numbers = []
       years.each do |year|
-        School.all.each do |school|
+        schools.each do |school|
           id = school["acara_school_id"]
           debug("Scraping NAPLAN numbers for #{id}")
           @numbers << scrape_naplan_numbers(acara_school_id: id, calendar_year: year)
@@ -236,9 +236,9 @@ end
 def main
   School.scrape
   School.save
-  Icsea.scrape
+  Icsea.scrape(schools: School.all)
   Icsea.save
-  NaplanNumbers.scrape
+  NaplanNumbers.scrape(schools: School.all)
   NaplanNumbers.save
 end
 
