@@ -3,6 +3,10 @@ require "spec_helper"
 describe NaplanNumbers do
   let(:table_name) { "naplan_numbers" }
 
+  before(:all) do
+    NaplanNumbers.log_level = NaplanNumbers::LOG_NONE
+  end
+
   describe "#scrape" do
     before(:each) do
       School.source_filename = "spec/schools.csv"

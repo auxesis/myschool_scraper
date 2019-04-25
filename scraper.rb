@@ -200,17 +200,37 @@ class NaplanNumbers
     end
 
     def debug(msg)
-      puts "[debug] " + msg
+      puts "[debug] " + msg if log_debug?
     end
 
     def info(msg)
-      puts "[info] " + msg
+      puts "[info] " + msg if log_info?
     end
 
     def all
       ScraperWiki.select("* FROM #{table_name}")
     end
+
+    def log_level=(level)
+      @log_level = level
+    end
+
+    def log_level
+      @log_level || LOG_DEBUG
+    end
+
+    def log_info?
+      log_level >= LOG_INFO
+    end
+
+    def log_debug?
+      log_level >= LOG_DEBUG
+    end
   end
+
+  LOG_DEBUG = 1
+  LOG_INFO = 2
+  LOG_NONE = -1
 end
 
 def main
